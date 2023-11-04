@@ -1,0 +1,25 @@
+
+---
+title: "Final Project EDA"
+author: "Jacob Adams"
+output: html_notebook
+---
+
+## **Exploratory Data Analysis**
+
+Prelimary EDA for a final project on data in Olympics Track and Field. The goal of this EDA is explore the nature of the data and its specifics. 
+
+**GUIDING QUESTION**
+Are there any noticeable trends in performances of track and field athletes in specific events over the past century. To specify, how does factors like nationality, gender, and event type correlate to performance?
+
+```{r}
+library(dplyr)
+library(lubridate)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+results <- read.csv("C:\\Users\\adams\\Downloads\\184_FP_DATA\\results.csv")
+```
+
