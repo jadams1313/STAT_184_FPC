@@ -21,5 +21,97 @@ library(ggplot2)
 
 ```{r}
 results <- read.csv("C:\\Users\\adams\\Downloads\\184_FP_DATA\\results.csv")
+
+extended_summer_results <- read.csv("C:\\Users\\adams\\Downloads\\184_FP_DATA\\summer.csv")
+
+summer_results <- extended_summer_results %>%
+  filter(Sport == "Athletics", Discipline == "Athletics")
+
+country_data <- read.csv("C:\\Users\\adams\\Downloads\\184_FP_DATA\\olympic-medals-by-country-2023.csv")
 ```
+
+**BECOMING AQUANTED WITH THE DATA SOURCES**
+
+Where did you find the data sources? *For the three data sets I've collected, Kaggle provided the results and summer_results data sets. The other data set was found by World Population Review.*
+
+Who collected/maintains them? *The International Olympics Committee oversees and maintains all data revolving summer and winter Olympics. This includes Track and Field data.*
+
+When and Why were they originally collected? *The Olympics is a historic athletic tradition for all countries. The data has been recorded since 1896 to preserve the history of the sports.*
+
+What does a case represent in each data source, and how man total cases are available? *In the data set for countries, cases are represented by the names of countries. In the data set summer_results, for the summer game results, cases are the names of athletes. In the data set for Track and Field results, named results, the cases are names of athletes.*
+
+What are some of the variables that you plan to use? *I plan to use the country_data data sets variables  and total medal count to correlate trends between country competing for and medal count. In the results and summer_results data set, I plan to use the gender, nationality, year, medal, and event variables to find relationships between each or maybe multiple regression.*
+```{r}
+country_data %>%
+  select(country, olympicMedalsByCountry_totAll)
+
+summer_results %>%
+  select(City, Discipline,Athlete, Country,Gender,Event, Medal)
+
+results %>%
+  select(Gender, Event, Location, Year, Medal, Name, Nationality)
+```
+
+
+**EXPLORE INTUITION RELATION TO RESEARCH QUESTION**
+
+Plots: 
+
+Country Medals
+```{r}
+country_data <- country_data %>%
+  rename(total_medals = "olympicMedalsByCountry_totAll")
+
+country_data <- country_data %>%
+  filter(total_medals > 200)
+
+ggplot(country_data, aes(x = total_medals, y = country)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Total Olympic Medals by Country", x = "Total Medals", y = "Country") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 10)) 
+```
+
+Year vs. Results Placing By Nationality 
+```{r}
+results <- results %>%
+  mutate(Medal = case_when(
+    Medal == "G" ~ 1,
+    Medal == "S" ~ 2,
+    Medal == "B" ~ 3,
+    TRUE ~ NA_integer_
+  ))
+
+results <- results %>%
+  filter(Gender %in% c("M","W"))
+```
+
+```{r}
+sample <- results %>%
+  filter(Event %in% c("10000M Men"))
+sample <- results %>%
+
+sample$Result <- sapply(strsplit(sample$Result, ":"), function(x) as.numeric(x[1]) * 60 + as.numeric(x[2]))
+
+
+
+ggplot(sample, aes(x = Year, y = Result)) + geom_point(na.rm = TRUE) + facet_wrap(~Nationality)
+```
+
+
+Summary Statistics for large data set
+```{r}
+sample_extened_results <- extended_summer_results %>% 
+  filter(Discipline == "Athletics")
+summary(sample_extened_results$Year)
+sapply(sample_extened_results[, c("City", "Sport", "Discipline", "Athlete", "Country", "Event", "Medal")], function(x) length(unique(x)))
+```
+
+**SOME PRELIMINARY OBSERVATIONS**
+
+Country Medals: Historically, North American and European countries have dominated in the total medal department. The only other competitors have been China and Japan. This will be useful to correlate finding between countries and event winners in the other data sets. 
+
+Results: For this data set, I made a scatter plot with year on the x-axis and times on the y-axis for the Mens 10000m run. I can do this for multiple other events, but examining this event allowed me to peak into the improvement of distance runners of the years. It was interesting to see which countries improved quicker than others. For example, from the graph I can see the USA has improved the most significantly over time. 
+
+Summer Results Filtered down to Track and Field: For this data set, I displayed some simple summary statistics to examine the total number of each categories and years in which the Olympics were held. These stats can tell us about the range of data values and the years in which the Olympics have been held. 
 
